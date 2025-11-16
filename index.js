@@ -461,14 +461,12 @@ app.post('/api/form-data', async (req, res) => {
     const cleanPhone = phone.replace(/[^0-9]/g, '');
     const userWhatsAppId = cleanPhone.includes('@c.us') ? cleanPhone : `${cleanPhone}@c.us`;
 
+    pendingConfirmations.delete(userWhatsAppId);
+    confirmationsSent.delete(userWhatsAppId);
+    completedSelections.delete(userWhatsAppId);
+
     const paymentLink = getPaymentLink(offer, connections);
     const price = getPricing(offer, connections);
-
-    if (completedSelections.has(userWhatsAppId)) {
-      completedSelections.delete(userWhatsAppId);
-      console.log(`🔄 Reset completed state for ${userWhatsAppId} - awaiting new response`);
-    }
-
     const userMessage = `Salut 👋 *${userName}*, merci pour votre demande d'abonnement ✅\n\nVoici un résumé de vos informations :\n\n📦 Pack choisi : *${userOffer}*\n🔗 Connexions : *${userConnections}*\n\n💰 Prix total : *${price}€*`;
     const confirmationMessage = `✅ *Veuillez confirmer vos informations :*\n\n1️⃣ Oui, je confirme mes informations. *Envoyez-moi le lien de paiement sécurisé* 💳\n\n2️⃣ J'ai une question avant de m'abonner\n\n👆 Répondez avec le numéro ou le texte correspondant.`;
 
